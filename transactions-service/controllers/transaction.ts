@@ -1,21 +1,22 @@
 import { Response, Request } from "express";
 import { ITransaction, Transaction } from "../models/transaction";
 
-exports.makeTransfer = async (req: Request, res: Response, next: any) => {
+exports.makeTransfer = async (req: Request, res: Response, next: any) => {console.log(req.body, typeof req.body)
   const { sender, recipient, amount } = req.body;
   //TODO: check if user is logged in
   //TODO: check if user balance is sufficient
   try {
-    const data = await fetch("http://localhost:5000/api/auth/user/" + recipient);
+    const data = await fetch("http://localhost:5005/api/auth/user/" + recipient);
     if (!data.status) {
     }
     let user = await data.json();
     
     const transaction: ITransaction = await Transaction.create({
-      sender,
+      sender: '6463d88c275d087e62ac5fd7',
       recipient: user?.data?._id,
       amount,
     });
+    console.log(transaction);
     res
       .status(200)
       .send({ message: "Transaction created successfully", transaction });
@@ -29,13 +30,13 @@ exports.makeTransfer = async (req: Request, res: Response, next: any) => {
 import { ErrorResponse } from "../utils/errorResponse";
 // import {IUser, User} from '../models/user';
 exports.transactionHistory = async (req: Request, res: Response, next: any) => {
-  // const {startDate,endDate}=req.params;
+  const {userId}=req.params;
 
   try {
     const transactions: ITransaction[] | null = await Transaction.find({
       $or: [
-        { sender: { $eq: "6463d88c275d087e62ac5fd7" } },
-        { recipient: { $eq: "6463d88c275d087e62ac5fd7" } },
+        { sender: { $eq: userId } },
+        { recipient: { $eq: userId } },
       ],
     });
 

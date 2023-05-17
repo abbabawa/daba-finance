@@ -6,7 +6,7 @@ var axios = require('axios');
 const jwtSecret = process.env.JWT_SECRET, jwt = require('jsonwebtoken');
 
 exports.register = async (req: Request, res: Response, next: any) => {
-  const { username, email, password } = req.body;console.log(req, username, email, password);
+  const { username, email, password } = req.body;console.log( username, email, password);
   try {
     const user: IUser = await User.create({
       username,

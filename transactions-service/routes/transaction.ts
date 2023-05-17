@@ -6,6 +6,6 @@ const { makeTransfer, transactionHistory } = require("../controllers/transaction
 
 //routes
 router.route("/transfer-funds").post(makeTransfer);
-router.route("/view").get(transactionHistory);
+router.route("/view/:userId").get(transactionHistory);
 
 module.exports = router;

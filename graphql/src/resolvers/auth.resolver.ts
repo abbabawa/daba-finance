@@ -6,52 +6,93 @@ import {
   Resolver,
   Root,
 } from "type-graphql";
-import { User, RegisterUserInput } from "../schemas/auth.schema";
+import { User, RegisterUserInput, LoginInput, LoginResponse } from "../schemas/auth.schema";
+// import fetch from 'node-fetch';
 
 @Resolver((of) => User)
 export default class {
   @Query((returns) => User, { nullable: true })
-  getUserByEmail(@Arg("email") email: string) {
-    // return projects.find((project) => project.name === name);
+  async getUserByEmail(@Arg("email") email: string) {
+
+    var requestOptions = {
+      method: "GET",
+    };
+    const user = await fetch(
+      "http://localhost:5005/api/auth/user/"+email,
+      //   requestOptions
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    let data: any = await user.json();console.log(data)
+    data = data.data
+    return {
+      username: data.username || "",
+      email: data.email || "",
+      accessToken: data.token || "",
+      balance: 9000 || 0,
+    };
   }
 
   @Mutation((returns) => User)
-  register(@Arg("input") input: RegisterUserInput) {
-    // return projects.find((project) => project.name === name);
-    console.log(input.email, "graphql input");
+  async register(@Arg("input") input: RegisterUserInput) {
     var raw = JSON.stringify({
-    //   email: input.email,
-    //   password: input.password,
-    //   username: input.username,
-    ...input
-    });console.log(raw, "raw body");
+      ...input,
+    });
+    console.log(raw, "raw body");
 
     var requestOptions = {
       method: "POST",
-      body: JSON.stringify({...input}),
+
+      body: JSON.stringify({ ...input }),
       //   redirect: "follow",
     };
-    const user = fetch(
+    const user = await fetch(
       "http://localhost:5005/api/auth/register",
       //   requestOptions
       {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: raw,
       }
-    )
-      .then(async (response) => {
-        let val = await response.text();
-        console.log(val);
-        let data: User = await response.json();
-        console.log(data);
-        return {
-          username: data.username,
-          email: data.email,
-          password: data.password,
-          balance: 9000,
-        };
-      })
-      .then((result) => console.log(result))
-      .catch((error) => console.log("error", error));
+    );
+    let data: any = await user.json();
+    return {
+      username: data.username || "",
+      email: data.email || "",
+      password: data.password || "",
+      balance: 9000 || 0,
+    };
+  }
+
+  @Mutation((returns) => LoginResponse)
+  async login(@Arg("input") input: LoginInput) {
+    var raw = JSON.stringify({
+      ...input,
+    });
+
+    var requestOptions = {
+      method: "POST",
+
+      body: JSON.stringify({ ...input }),
+      //   redirect: "follow",
+    };
+    const user = await fetch(
+      "http://localhost:5005/api/auth/login",
+      //   requestOptions
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: raw,
+      }
+    );
+    let data: any = await user.json();
+    return {
+      username: data.username || "",
+      email: data.email || "",
+      accessToken: data.token || "",
+      balance: 9000 || 0,
+    };
   }
 }

@@ -3,12 +3,27 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type LoginResponse {
+  accessToken: String!
+  balance: Float!
+  email: String!
+  username: String!
+}
+
 type Mutation {
+  login(input: LoginInput!): LoginResponse!
+  makeTransfer(input: TransferFundsInput!): Transfer!
   register(input: RegisterUserInput!): User!
 }
 
 type Query {
   getUserByEmail(email: String!): User
+  viewTransactions(input: ViewTransactionsInput!): [Transfer!]!
 }
 
 input RegisterUserInput {
@@ -17,9 +32,25 @@ input RegisterUserInput {
   username: String!
 }
 
+type Transfer {
+  amount: Float!
+  date: String!
+  recipient: String!
+  sender: String!
+}
+
+input TransferFundsInput {
+  amount: Float!
+  recipient: String!
+}
+
 type User {
   balance: Float!
   email: String!
   password: String!
   username: String!
+}
+
+input ViewTransactionsInput {
+  user: String!
 }
