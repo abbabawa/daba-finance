@@ -3,6 +3,8 @@ import { ITransaction, Transaction } from "../models/transaction";
 
 exports.makeTransfer = async (req: Request, res: Response, next: any) => {
   const { sender, recipient, amount } = req.body;
+  //TODO: check if user is logged in
+  //TODO: check if user balance is sufficient
   try {
     const data = await fetch("http://localhost:5000/api/auth/user/" + recipient);
     if (!data.status) {

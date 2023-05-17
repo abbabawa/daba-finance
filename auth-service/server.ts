@@ -11,7 +11,7 @@ import { connectDB } from "./config/db";
 
 
 const app= express();
-const PORT= process.env.PORT || 5000;
+const PORT= process.env.PORT || 5005;
 // const errorHandler = require('./middleware/error')
 
 //connect to db
@@ -25,8 +25,8 @@ app.use(cors())
 
 
 const server=app.listen(
-    PORT,()=>{
-        console.log(`Server is running on port ${PORT}`)
+    5005,()=>{
+        console.log(`Server is running on port ${5005}`)
     }
 )
 process.on("unhandledRejection",(error,promise)=>{

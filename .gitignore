@@ -4,3 +4,5 @@
 /auth-service/.env
 /transaction-service/node_modules
 /transaction-service/.env
+/graphql/.env
+/graphql/node_modules
