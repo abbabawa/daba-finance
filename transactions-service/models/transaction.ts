@@ -3,7 +3,7 @@ import { model, Schema, Model, Document } from 'mongoose';
 export interface ITransaction extends Document {
     sender:string;
     recipient:string;
-    account_balance:number;
+    amount:number;
     transaction_date:string;
 }
 

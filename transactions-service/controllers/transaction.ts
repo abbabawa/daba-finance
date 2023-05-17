@@ -1,18 +1,21 @@
 import { Response, Request } from "express";
 import { ITransaction, Transaction } from "../models/transaction";
 
-exports.makeTransfer = async (req: Request, res: Response, next: any) => {console.log(req.body, typeof req.body)
+exports.makeTransfer = async (req: Request, res: Response, next: any) => {
+  console.log(req.body, typeof req.body);
   const { sender, recipient, amount } = req.body;
   //TODO: check if user is logged in
   //TODO: check if user balance is sufficient
   try {
-    const data = await fetch("http://localhost:5005/api/auth/user/" + recipient);
+    const data = await fetch(
+      "http://localhost:5005/api/auth/user/" + recipient
+    );
     if (!data.status) {
     }
     let user = await data.json();
-    
+
     const transaction: ITransaction = await Transaction.create({
-      sender: '6463d88c275d087e62ac5fd7',
+      sender: "6463d88c275d087e62ac5fd7",
       recipient: user?.data?._id,
       amount,
     });
@@ -30,19 +33,40 @@ exports.makeTransfer = async (req: Request, res: Response, next: any) => {consol
 import { ErrorResponse } from "../utils/errorResponse";
 // import {IUser, User} from '../models/user';
 exports.transactionHistory = async (req: Request, res: Response, next: any) => {
-  const {userId}=req.params;
+  const { userId } = req.params;
 
   try {
     const transactions: ITransaction[] | null = await Transaction.find({
-      $or: [
-        { sender: { $eq: userId } },
-        { recipient: { $eq: userId } },
-      ],
+      $or: [{ sender: { $eq: userId } }, { recipient: { $eq: userId } }],
     });
 
     res.status(200).send(transactions);
     //res.send({user,200,res})
   } catch (error: any) {
+    return next(new ErrorResponse(error.message, 500));
+  }
+};
+
+exports.getAccountBalance = async (req: Request, res: Response, next: any) => {
+  const { userId } = req.params;
+
+  try {
+    const transactions = await Transaction.find({
+      $or: [{ sender: { $eq: userId } }, { recipient: { $eq: userId } }],
+    });
+
+    let balance = 0;
+    transactions.forEach((tx) => {console.log(tx.amount, tx.sender.toString(), balance, typeof tx)
+      if (tx.sender.toString() === userId) {
+        balance -= tx.amount;
+      } else if (tx.recipient.toString() === userId) {
+        balance += tx.amount;
+      }
+    });
+    
+    res.status(200).send({balance: balance});
+    //res.send({user,200,res})
+  } catch (error: any) {console.log(error)
     return next(new ErrorResponse(error.message, 500));
   }
 };

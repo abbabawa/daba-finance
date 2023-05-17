@@ -7,7 +7,7 @@ import {
   } from "type-graphql";
   import { User, RegisterUserInput, LoginInput, LoginResponse } from "../schemas/auth.schema";
   import express  from "express";
-import { Transfer, TransferFundsInput, ViewTransactionsInput } from "../schemas/transfer.schema";
+import { Balance, Transfer, TransferFundsInput, ViewTransactionsInput } from "../schemas/transfer.schema";
   // import fetch from 'node-fetch';
   
   @Resolver((of) => User)
@@ -89,6 +89,21 @@ import { Transfer, TransferFundsInput, ViewTransactionsInput } from "../schemas/
         }
       })
       return data;
+    }
+
+    @Query((returns) => Balance)
+    async getAccountBalance(@Arg("input") input: ViewTransactionsInput) {
+      const user = await fetch(
+        "http://localhost:5001/api/transaction/account-balance/"+input.user,
+        //   requestOptions
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      let data: any = await user.json();
+      
+      return {balance: data.balance};
     }
   }
   

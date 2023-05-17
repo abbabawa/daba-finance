@@ -3,6 +3,10 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type Balance {
+  balance: Float!
+}
+
 input LoginInput {
   email: String!
   password: String!
@@ -22,6 +26,7 @@ type Mutation {
 }
 
 type Query {
+  getAccountBalance(input: ViewTransactionsInput!): Balance!
   getUserByEmail(email: String!): User
   viewTransactions(input: ViewTransactionsInput!): [Transfer!]!
 }
