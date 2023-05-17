@@ -26,4 +26,4 @@ const TransactionSchema: Schema = new Schema({
     transaction_date: { type: Date, default: Date.now() }
 });
 
-export const Transaction:Model<ITransaction> = model("User", TransactionSchema);
+export const Transaction:Model<ITransaction> = model("Transaction", TransactionSchema);
