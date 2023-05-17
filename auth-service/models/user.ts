@@ -11,7 +11,8 @@ export interface IUser extends Document {
     username:string;
     password:string;
     email:string;
-
+    account_balance:number;
+    active:boolean;
 }
 // define user schema
 const UserSchema: Schema = new Schema({
