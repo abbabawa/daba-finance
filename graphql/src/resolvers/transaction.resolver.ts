@@ -14,17 +14,17 @@ import { IncomingMessage } from "http";
   @Resolver((of) => User)
   export default class {
     @Query((returns) => User, { nullable: true })
-    async getUserByEmail(@Arg("email") email: string) {
-  
+    async getUserByEmail(@Arg("email") email: string, @Ctx() context: IncomingMessage) {
+      const headers = context.headers;
       var requestOptions = {
         method: "GET",
       };
       const user = await fetch(
-        "http://localhost:5005/api/auth/user/"+email,
+        "http://localhost:5005/api/auth/user/",
         //   requestOptions
         {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "Authorization": ""+headers.authorization },
         }
       );
       let data: any = await user.json();
@@ -41,12 +41,11 @@ import { IncomingMessage } from "http";
     }
   
     @Mutation((returns) => Transfer)
-    async makeTransfer(@Arg("input") input: TransferFundsInput) {
-        
+    async makeTransfer(@Arg("input") input: TransferFundsInput, @Ctx() context: IncomingMessage) {
+      const headers = context.headers;
       var raw = JSON.stringify({
         ...input,
       });
-      console.log(raw, "raw body");
   
       var requestOptions = {
         method: "POST",
@@ -59,15 +58,15 @@ import { IncomingMessage } from "http";
         //   requestOptions
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "Authorization": ""+headers.authorization },
           body: raw,
         }
       );
       let data: any = await user.json();
-      if(!data.status){
+      if(data.status == false){
         throw new Error(data.error)
       }
-      data = data.data; 
+      data = data.transaction; 
       return {
         sender: data.sender || "",
         recipient: data.recipient || "",
@@ -76,18 +75,20 @@ import { IncomingMessage } from "http";
       };
     }
   
-    @Query((returns) => [Transfer])
-    async viewTransactions(@Arg("input") input: ViewTransactionsInput) {
+    //TODO: populate user info
+    @Query((returns) => [Transfer] || [])
+    async viewTransactions(@Ctx() context: IncomingMessage) {
+      const headers = context.headers;
       const user = await fetch(
-        "http://localhost:5001/api/transaction/view/"+input.user,
+        "http://localhost:5001/api/transaction/view/",
         //   requestOptions
         {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "Authorization": ""+headers.authorization },
         }
       );
       let data: any = await user.json();
-      if(!data.status){
+      if(data.status == false){
         throw new Error(data.error)
       }
       data = data.data
@@ -103,10 +104,10 @@ import { IncomingMessage } from "http";
     }
 
     @Query((returns) => Balance)
-    async getAccountBalance(@Arg("input") input: ViewTransactionsInput, @Ctx() context: IncomingMessage) {
-      const headers = context.headers; console.log(headers)
+    async getAccountBalance( @Ctx() context: IncomingMessage) {
+      const headers = context.headers;
       const user = await fetch(
-        "http://localhost:5001/api/transaction/account-balance/"+input.user,
+        "http://localhost:5001/api/transaction/account-balance/",
         //   requestOptions
         {
           method: "GET",
@@ -118,7 +119,7 @@ import { IncomingMessage } from "http";
         throw new Error(data.error)
       }
       
-      return {balance: data.data};
+      return {status: data.status, message: data.message, balance: {amount: data.data.balance}};
     }
   }
   

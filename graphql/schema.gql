@@ -4,7 +4,13 @@
 # -----------------------------------------------
 
 type Balance {
-  balance: Float!
+  balance: BalanceValue!
+  message: String!
+  status: String!
+}
+
+type BalanceValue {
+  amount: Float!
 }
 
 input LoginInput {
@@ -26,9 +32,9 @@ type Mutation {
 }
 
 type Query {
-  getAccountBalance(input: ViewTransactionsInput!): Balance!
+  getAccountBalance: Balance!
   getUserByEmail(email: String!): User
-  viewTransactions(input: ViewTransactionsInput!): [Transfer!]!
+  viewTransactions: [Transfer!]!
 }
 
 input RegisterUserInput {
@@ -47,7 +53,6 @@ type Transfer {
 input TransferFundsInput {
   amount: Float!
   recipient: String!
-  sender: String!
 }
 
 type User {
@@ -55,8 +60,4 @@ type User {
   email: String!
   password: String!
   username: String!
-}
-
-input ViewTransactionsInput {
-  user: String!
 }

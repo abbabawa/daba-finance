@@ -16,15 +16,26 @@ export class Transfer {
 }
 
 @ObjectType()
-export class Balance {
+export class BalanceValue {
+
   @Field(() => Number)
-  balance: number;
+  amount: number;
+}
+
+@ObjectType()
+export class Balance {
+  @Field(() => String)
+  status: string;
+
+  @Field(() => String)
+  message: string;
+
+  @Field(() => BalanceValue)
+  balance: BalanceValue;
 }
 
 @InputType()
 export class TransferFundsInput {
-  @Field(() => String)
-  sender: string;
 
   @Field(() => String)
   recipient: string;

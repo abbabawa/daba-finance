@@ -113,10 +113,12 @@ exports.transactionHistory = async (req: Request, res: Response, next: any) => {
       $or: [{ sender: { $eq: val.data._id } }, { recipient: { $eq: val.data._id } }],
     });
 
-    return res.status(200).send(transactions);
+    return res.status(200).send({status: true, data: transactions, message: "Request was successful"});
     //res.send({user,200,res})
-  } catch (error: any) {
-    return next(new ErrorResponse(error.message, 500));
+  } catch (error: any) {console.log(error)
+    return res
+      .status(500)
+      .send({ status: false, message: "Internal server error" });
   }
 };
 

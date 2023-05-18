@@ -1,4 +1,4 @@
-import { model, Schema, Model, Document } from 'mongoose';
+import mongoose, { model, Schema, Model, Document } from 'mongoose';
 
 export interface ITransaction extends Document {
     sender:string;
@@ -26,4 +26,4 @@ const TransactionSchema: Schema = new Schema({
     transaction_date: { type: Date, default: Date.now() }
 });
 
-export const Transaction:Model<ITransaction> = model("Transaction", TransactionSchema);
+export const Transaction:Model<ITransaction> = mongoose.model("Transaction", TransactionSchema);
