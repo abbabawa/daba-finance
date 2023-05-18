@@ -1,5 +1,13 @@
 import { Field, InputType, Int, ObjectType } from "type-graphql";
-// import Task from "./task";
+
+@ObjectType()
+export class Error {
+  @Field(() => Boolean)
+  status: boolean;
+
+  @Field(() => String)
+  error: string;
+}
 
 @ObjectType()
 export class User {

@@ -6,6 +6,7 @@ import http from 'http';
 
 import express from "express";
 import { graphqlHTTP } from "express-graphql";
+import { ApolloServer } from "apollo-server-express";
 
 const app = express();
 
@@ -27,6 +28,13 @@ const run = async () => {
       graphiql: true,
     })
   );
+
+  new ApolloServer({
+    schema: schema,
+    context: ({ req }) => {
+      return req;
+    },
+   });
 
   const PORT = 8001;
 

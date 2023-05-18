@@ -14,68 +14,60 @@ exports.register = async (req: Request, res: Response, next: any) => {
       password,
     });
     let token = jwt.sign(req.body, jwtSecret, {expiresIn: "24h"});
-    res.status(200).send(user);
+    return res.status(200).send({status: true, data: user, message: "request successful"});
     //sendToken(user,201,res)
   } catch (error: any) {
-    next(error);
+    return res.status(500).send({status: false,  error: "Internal Server Error"});
   }
 };
 
-// import { Response, Request } from 'express';
-import { ErrorResponse } from "../utils/errorResponse";
-// import {IUser, User} from '../models/user';
 exports.login = async (req: Request, res: Response, next: any) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return next(
-      new ErrorResponse("Please provide a valid email and Password", 400)
-    );
+    return res.status(400).send({status: false, error: "Please provide a valid email and Password"})
   }
   try {
     const user: IUser | null = await User.findOne({ email }).select(
       "+password"
     );
     if (!user) {
-      return next(new ErrorResponse("Invalid Credentials", 401));
+      return res.status(401).send({status: false,  error: "Invalid Credentials"});
     }
     const isMatch: boolean = await user.matchPassword(password);
     let token = jwt.sign({...user.toJSON()}, jwtSecret, {expiresIn: "24h"});
     let userData = {...user.toJSON(), token}
     if (!isMatch) {
-      return next(new ErrorResponse("Invalid Credentials", 401));
+      return res.status(400).send({status: false, error: "Invalid credentials"})
     }
-    res.status(200).send(userData);
-    //res.send({user,200,res})
+    res.status(200).send({status: true, data: userData, message: "Request was successful"});
   } catch (error: any) {
-    return next(new ErrorResponse(error.message, 500));
+    res.status(500).send({status: false, error: "Internal server error"});
   }
 };
 
 exports.getUserByEmail = async (req: Request, res: Response, next: any) => {
   const { email } = req.params;
   if (!email) {
-    return next(
-      new ErrorResponse("Please provide a valid email", 400)
-    );
+    return res.status(400).send({status: false,  error: "Please provide a valid email"});
   }
   try {
     const user: IUser | null = await User.findOne({ email }).select(
       "+password"
     );console.log(user)
     if (!user) {
-      return res.status(404).send({message: "user not found", status: false});
+      return res.status(404).send({error: "user not found", status: false});
     }
     
-    res.status(200).send({data: user});
-    //res.send({user,200,res})
+    return res.status(200).send({status: true, data: user, message: "Request successful"});
+    
   } catch (error: any) {
-    return next(new ErrorResponse(error.message, 500));
+    return res.status(400).send({status: false,  error: "Internal server error"});
   }
 };
 
 exports.verifyToken = (req, res, next) => {
     if (req.headers['authorization']) {
-        try {
+        try {console.log(req.headers['authorization'])
             let authorization = req.headers['authorization'].split(' ');
             if (authorization[0] !== 'Bearer') {
                 res.header("Access-Control-Allow-Origin", "true");
@@ -87,18 +79,19 @@ exports.verifyToken = (req, res, next) => {
                     }
                 );
             } else {
-                req.jwt = jwt.verify(authorization[1], jwtSecret);
+                let tokenValue = jwt.verify(authorization[1], jwtSecret);console.log(tokenValue, "token value");
+                req.jwt = tokenValue;
                 // return next();
                 return res.status(401).send(
                     {
                         status: true,
                         message: "Token is valid",
-                        errors: []
+                        data: tokenValue
                     }
                 );
             }
 
-        } catch (err) {console.log(err, err.message)
+        } catch (err) {console.log(err.message)
             if(err.message === "jwt expired"){
                 return res.status(403).send(
                     {

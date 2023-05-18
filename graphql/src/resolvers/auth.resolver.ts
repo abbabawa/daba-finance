@@ -1,5 +1,6 @@
 import {
   Arg,
+  ArgumentValidationError,
   FieldResolver,
   Mutation,
   Query,
@@ -11,7 +12,7 @@ import { User, RegisterUserInput, LoginInput, LoginResponse } from "../schemas/a
 
 @Resolver((of) => User)
 export default class {
-  @Query((returns) => User, { nullable: true })
+  @Query((returns) => User)
   async getUserByEmail(@Arg("email") email: string) {
 
     var requestOptions = {
@@ -26,6 +27,9 @@ export default class {
       }
     );
     let data: any = await user.json();console.log(data)
+    if(!data.status){
+      throw new ArgumentValidationError([data.error])
+    }
     data = data.data
     return {
       username: data.username || "",
@@ -58,6 +62,10 @@ export default class {
       }
     );
     let data: any = await user.json();
+    if(!data.status){
+      throw new Error(data.error);
+    }
+    data = data.data;
     return {
       username: data.username || "",
       email: data.email || "",
@@ -88,6 +96,10 @@ export default class {
       }
     );
     let data: any = await user.json();
+    if(!data.status){
+      throw new Error(data.error)
+    }
+    data = data.data;
     return {
       username: data.username || "",
       email: data.email || "",

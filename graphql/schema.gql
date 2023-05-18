@@ -47,6 +47,7 @@ type Transfer {
 input TransferFundsInput {
   amount: Float!
   recipient: String!
+  sender: String!
 }
 
 type User {

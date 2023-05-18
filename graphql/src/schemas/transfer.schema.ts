@@ -24,6 +24,9 @@ export class Balance {
 @InputType()
 export class TransferFundsInput {
   @Field(() => String)
+  sender: string;
+
+  @Field(() => String)
   recipient: string;
 
   @Field(() => Number)

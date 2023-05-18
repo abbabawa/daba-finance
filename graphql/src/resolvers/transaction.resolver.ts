@@ -8,6 +8,7 @@ import {
   import { User, RegisterUserInput, LoginInput, LoginResponse } from "../schemas/auth.schema";
   import express  from "express";
 import { Balance, Transfer, TransferFundsInput, ViewTransactionsInput } from "../schemas/transfer.schema";
+import { IncomingMessage } from "http";
   // import fetch from 'node-fetch';
   
   @Resolver((of) => User)
@@ -26,7 +27,10 @@ import { Balance, Transfer, TransferFundsInput, ViewTransactionsInput } from "..
           headers: { "Content-Type": "application/json" },
         }
       );
-      let data: any = await user.json();console.log(data)
+      let data: any = await user.json();
+      if(!data.status){
+        throw new Error(data.error)
+      }
       data = data.data
       return {
         username: data.username || "",
@@ -58,9 +62,12 @@ import { Balance, Transfer, TransferFundsInput, ViewTransactionsInput } from "..
           headers: { "Content-Type": "application/json" },
           body: raw,
         }
-      );console.log(user, "transaction response before")
+      );
       let data: any = await user.json();
-      data = data.transaction; console.log(data, "transaction response")
+      if(!data.status){
+        throw new Error(data.error)
+      }
+      data = data.data; 
       return {
         sender: data.sender || "",
         recipient: data.recipient || "",
@@ -80,6 +87,10 @@ import { Balance, Transfer, TransferFundsInput, ViewTransactionsInput } from "..
         }
       );
       let data: any = await user.json();
+      if(!data.status){
+        throw new Error(data.error)
+      }
+      data = data.data
       data = data.map((transaction:any)=>{
         return {
             sender: transaction.sender,
@@ -92,18 +103,22 @@ import { Balance, Transfer, TransferFundsInput, ViewTransactionsInput } from "..
     }
 
     @Query((returns) => Balance)
-    async getAccountBalance(@Arg("input") input: ViewTransactionsInput) {
+    async getAccountBalance(@Arg("input") input: ViewTransactionsInput, @Ctx() context: IncomingMessage) {
+      const headers = context.headers; console.log(headers)
       const user = await fetch(
         "http://localhost:5001/api/transaction/account-balance/"+input.user,
         //   requestOptions
         {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "Authorization": ""+headers.authorization},
         }
       );
       let data: any = await user.json();
+      if(!data.status){
+        throw new Error(data.error)
+      }
       
-      return {balance: data.balance};
+      return {balance: data.data};
     }
   }
   
