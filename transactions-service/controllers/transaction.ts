@@ -80,12 +80,11 @@ exports.makeTransfer = async (req: Request, res: Response, next: any) => {
       recipient: user?.data?._id,
       amount,
     });
-    console.log(transaction);
-    produceMessage();
+    // console.log(transaction);
+    produceMessage(val.data._id);
     return res
       .status(200)
       .send({ message: "Transaction created successfully", transaction });
-    //sendToken(user,201,res)
   } catch (error: any) {
     return res
       .status(500)
