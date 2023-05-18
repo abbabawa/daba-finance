@@ -6,7 +6,7 @@ const { makeTransfer, transactionHistory, getAccountBalance } = require("../cont
 
 //routes
 router.route("/transfer-funds").post(makeTransfer);
-router.route("/view/:userId").get(transactionHistory);
-router.route("/account-balance/:userId").get(getAccountBalance);
+router.route("/view").get(transactionHistory);
+router.route("/account-balance").get(getAccountBalance);
 
 module.exports = router;

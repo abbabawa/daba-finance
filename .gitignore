@@ -2,8 +2,8 @@
 /node_modules
 auth-service/node_modules/
 /auth-service/.env
-transactions-service/node_modules/
-/transaction-service/.env
+/transactions-service/node_modules/
+/transactions-service/.env
 /graphql/.env
 /graphql/node_modules
 node_modules/

@@ -142,7 +142,7 @@ exports.getAccountBalance = async (req: Request, res: Response, next: any) => {
       .status(200)
       .send({
         status: true,
-        data: balance,
+        data: {balance: balance},
         message: "Balance retrieved successfully",
       });
   } catch (error: any) {
